@@ -17,27 +17,46 @@
 %%%
 %%% @end
 
--module(morm_app).
+-module(morm_builder).
+-compile(export_all).
 
--behaviour(application).
+filename(Collection) when is_atom(Collection) ->
+	filename(atom_to_list(Collection))
+;
+filename(Collection) ->
+	Prefix = get_prefix(),
+    Prefix ++ Collection
+.
 
-%% Application callbacks
--export([start/2, stop/1]).
+get_prefix() ->
+	case application:get_env(morm, prefix) of
+		{ok, P} -> P;
+		_ -> ""
+	end
+.
 
-%% ===================================================================
-%% Application callbacks
-%% ===================================================================
+get_adapter() ->
+	case application:get_env(morm, db_adapter) of
+		{ok, P} -> P;
+		_ -> db_dummy
+	end
+.
 
-start(_StartType, _StartArgs) ->
-    morm_sup:start_link(),
-    case application:get_env(morm, schema) of
-		{ok, Schema} -> 
-			morm:load(Schema),
-			ok;
-		_ -> ok
-    end,
-    ok
-    .
+make_header(Collection) when is_atom(Collection) ->
+	make_header(atom_to_list(Collection))
+;
+make_header(Collection) ->
+	Prefix = get_prefix(),
+	Text=io_lib:format("-module(~s~s).
+-compile(export_all).
+", [Prefix, Collection])
+.
 
-stop(_State) ->
-    ok.
+make_insert(Collection, Fields) when is_atom(Collection) ->
+	make_insert(atom_to_list(Collection), Fields)
+;
+
+make_insert(Collection, Fields) ->
+	Adapter=get_adapter(),
+	ok
+.

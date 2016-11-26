@@ -17,27 +17,5 @@
 %%%
 %%% @end
 
--module(morm_app).
-
--behaviour(application).
-
-%% Application callbacks
--export([start/2, stop/1]).
-
-%% ===================================================================
-%% Application callbacks
-%% ===================================================================
-
-start(_StartType, _StartArgs) ->
-    morm_sup:start_link(),
-    case application:get_env(morm, schema) of
-		{ok, Schema} -> 
-			morm:load(Schema),
-			ok;
-		_ -> ok
-    end,
-    ok
-    .
-
-stop(_State) ->
-    ok.
+-module(db_dummy).
+-compile(export_all).
